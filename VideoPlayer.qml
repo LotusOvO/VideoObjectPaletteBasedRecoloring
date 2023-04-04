@@ -22,6 +22,8 @@ Item {
             border.width: 2
             radius: 5
             Image {
+                visible: buttonArea.pathReady
+                cache: false
                 anchors.fill: parent
                 anchors.leftMargin: 8
                 anchors.rightMargin: 8
@@ -117,6 +119,8 @@ Item {
             border.width: 2
             radius: 5
             Image {
+                visible: buttonArea.weightReady
+                cache: false
                 anchors.fill: parent
                 anchors.leftMargin: 8
                 anchors.rightMargin: 8

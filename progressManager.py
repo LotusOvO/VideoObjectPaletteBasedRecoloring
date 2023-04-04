@@ -41,6 +41,7 @@ class ProgressManager(QObject):
             self.frame.append(img_item[:-4])
         self.currentFrame = 0
         # 将图像设置为第一帧
+        self.switchFrame.emit(["", ""])
         self.switchFrame.emit(["file:///" + self.path + "images/" + self.frame[self.currentFrame] + ".jpg",
                                "file:///" + self.path + "recolored/" + self.frame[self.currentFrame] + ".png"])
         self.setPos.emit(self.currentFrame / self.countFrame)

@@ -46,6 +46,7 @@ Item {
                     pathReady = true
                     hullReady = false
                     weightReady = false
+                    progressManager.readPath(chosenPath.text)
                 }
             }
         }

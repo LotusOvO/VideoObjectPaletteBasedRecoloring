@@ -1,5 +1,6 @@
 
 import QtQuick 2.0
+import QtQuick.Controls
 
 Item {
     width: 600
@@ -46,9 +47,20 @@ Item {
                 }
                 Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    width: 6
+                    width: 8
                     height: 80
-                    color: "black"
+                    border.width: 2
+//                    color: "black"
+                    gradient: Gradient {
+                        GradientStop {
+                            position: 0.0
+                            color: originalColor
+                        }
+                        GradientStop {
+                            position: 1.0
+                            color: replaceColor
+                        }
+                    }
 //                    border.width: currentIndex === index ? 2 : 0
 //                    border.color: "lightblue"
                     z: 4
