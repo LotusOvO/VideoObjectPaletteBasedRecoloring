@@ -21,16 +21,22 @@ class RecolorManager(QObject):
         self.palette = None
         self.weights = None
         self.weights_dict = None
+        self.object_color = None
 
     @Slot(str)
     def setWorkPath(self, path):
         self.work_path = path
+        self.tetra_prime = None
+        self.palette = None
+        self.weights = None
+        self.weights_dict = None
+        self.object_color = None
         #  do some check
 
     @Slot(int)
     def useMaskAndGetConvexhull(self, vertices_num=6):
         pool = Pool(processes=1)
-        tetra_prime_path = pool.starmap_async(get_convexhull, [(self.work_path, vertices_num)])
+        tetra_prime_path = pool.starmap_async(get_convexhull, [(self.work_path, vertices_num, self.object_color)])
         while not tetra_prime_path.ready():
             QtTest.QTest.qWait(100)
         tetra_prime_path = tetra_prime_path.get()[0]
@@ -48,6 +54,7 @@ class RecolorManager(QObject):
         #     QtTest.QTest.qWait(100)
         # self.weights = work.get()[0]
         self.weights = get_images_weight(self.work_path, self.tetra_prime)
+        self.weights_dict = None
         self.saveWeightDict()
         self.succeedGetWeight.emit()
 
@@ -62,9 +69,9 @@ class RecolorManager(QObject):
         # while not work.ready():
         #     QtTest.QTest.qWait(100)
         if self.weights_dict is not None:
-            images_recolor_use_dict(self.work_path, self.weights_dict, self.palette)
+            images_recolor_use_dict(self.work_path, self.weights_dict, self.palette, object_color=self.object_color)
         else:
-            images_recolor(self.work_path, self.weights, self.palette)
+            images_recolor(self.work_path, self.weights, self.palette, object_color=self.object_color)
         self.succeedRecolor.emit(self.work_path)
 
     @Slot(str)
@@ -73,13 +80,6 @@ class RecolorManager(QObject):
         self.palette = self.tetra_prime.copy()
         self.succeedGetConvexhull.emit()
         self.updatePalette.emit(tetra_prime_file_path)
-
-    # @Slot(str)
-    # def saveTetraPrime(self, tetra_prime_path):
-    #     video_name = self.work_path.rsplit("/", 2)[1]
-    #     name = tetra_prime_path + video_name + ('-%02d.js' % len(self.tetra_prime))
-    #     with open(name, 'w') as myfile:
-    #         json.dump({'vs': self.tetra_prime.clip(0.0, 255.0).tolist()}, myfile, indent=4)
 
     @Slot()
     def saveWeightDict(self):
@@ -107,6 +107,21 @@ class RecolorManager(QObject):
     def readWeightsDict(self, weights_dict_path):
         self.weights_dict = np.load(weights_dict_path)
         self.succeedGetWeight.emit()
+
+    @Slot(str)
+    def setObjectColor(self, color_str):
+        strR = color_str[1:3]
+        strG = color_str[3:5]
+        strB = color_str[5:7]
+        r = int('0x' + strR, 16)
+        g = int('0x' + strG, 16)
+        b = int('0x' + strB, 16)
+        self.object_color = [r, g, b]
+        print(self.object_color)
+
+    @Slot()
+    def unsetObjectColor(self):
+        self.object_color = None
 
 
 if __name__ == "__main__":

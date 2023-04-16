@@ -264,7 +264,7 @@ def remove_one_edge_by_finding_smallest_adding_volume_with_test_conditions(mesh,
         return mesh
 
 
-def get_convexhull(work_path, vertices_num=6):
+def get_convexhull(work_path, vertices_num=6, object_color=None, frame_interval=12):
     import time
     import os
     video_name = work_path.rsplit("/", 2)[1]
@@ -280,29 +280,17 @@ def get_convexhull(work_path, vertices_num=6):
     start_time = time.perf_counter()
 
     colors = None  # type:np.ndarray
-    # frame = 0
-    # for img_item in os.listdir(images_path):
-    #     img_path = os.path.join(images_path, img_item)
-    #     img_label = np.asfarray(Image.open(img_path).convert('RGB'))
-    #     mask_path = os.path.join(masks_path, img_item[:-4] + '.png')
-    #     mask_label = np.asfarray(Image.open(mask_path).convert('L'))
-    #     img_label[np.where(mask_label == 0)] = [128, 128, 128]
-    #     Image.fromarray(img_label.astype(np.uint8)).save(os.path.join(masked_path, img_item[:-4] + '.png'))
-    #     img_label = img_label.reshape((-1, 3))
-    #     frame += 1
-    #     if colors is None:
-    #         colors = np.unique(img_label, axis=0)
-    #         break
-    #     elif frame % 20 == 0:
-    #         colors = np.append(colors, img_label, axis=0)
-    #         colors = np.unique(colors, axis=0)
 
     def useMask(img_item):
         img_path = os.path.join(images_path, img_item)
         img_label = np.asfarray(Image.open(img_path).convert('RGB'))
         mask_path = os.path.join(masks_path, img_item[:-4] + '.png')
-        mask_label = np.asfarray(Image.open(mask_path).convert('L'))
-        img_label[np.where(mask_label == 0)] = [128, 128, 128]
+        if object_color is None:
+            mask_label = np.asfarray(Image.open(mask_path).convert('L'))
+            img_label[np.where(mask_label == 0)] = [128, 128, 128]
+        else:
+            mask_label = np.asfarray(Image.open(mask_path).convert('RGB'))
+            img_label[~np.all(mask_label == object_color, axis=-1)] = [128, 128, 128]
         Image.fromarray(img_label.astype(np.uint8)).save(os.path.join(masked_path, img_item[:-4] + '.png'))
         img_label = img_label.reshape((-1, 3))
         return img_label
@@ -311,6 +299,7 @@ def get_convexhull(work_path, vertices_num=6):
         labels = p.map(useMask, os.listdir(images_path))
 
     print("mask time: ", time.perf_counter() - start_time)
+    start_time = time.perf_counter()
 
     # for label in labels[::20]:
     #     if colors is None:
@@ -319,7 +308,7 @@ def get_convexhull(work_path, vertices_num=6):
     #         colors = np.append(colors, label, axis=0)
     #         colors = np.unique(colors, axis=0)
 
-    for label in labels[::24]:
+    for label in labels[::frame_interval]:
         if colors is None:
             colors = label
         else:
@@ -372,5 +361,5 @@ def get_convexhull(work_path, vertices_num=6):
 
 
 if __name__ == "__main__":
-    get_convexhull("C:/Users/Administrator/Documents/Code/XMem/workspace/harmoe/")
+    get_convexhull("C:/Users/Administrator/Documents/Code/XMem/workspace/fortest/", object_color=[128, 0, 0], frame_interval=12)
     pass

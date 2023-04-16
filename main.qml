@@ -11,6 +11,7 @@ Window {
     height: 900
     visible: true
     title: qsTr("VideoObjectPaletteBasedRecoloring")
+    id: rootwindow
     Item {
         width: 1400
         height: 900
@@ -36,8 +37,13 @@ Window {
 
         VideoPlayer{
             id: videoPlayer
-            y : 10
-            x : 720
+            y: 10
+            x: 720
+        }
+        MaskSelector{
+            id: maskSelector
+            x: rootwindow.x + 10
+            y: rootwindow.y + 10
         }
     }
 }

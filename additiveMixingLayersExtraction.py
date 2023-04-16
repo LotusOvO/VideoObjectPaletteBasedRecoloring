@@ -297,11 +297,12 @@ def get_images_weights_use_dict(work_path, tetra_prime):
     return weights_dict
 
 
-def images_recolor_use_dict(work_path, weights_dict, palette):
+def images_recolor_use_dict(work_path, weights_dict, palette, object_color=None, recolor_again=False):
     start = time.perf_counter()
     images_path = work_path + "images/"
+    if recolor_again:
+        images_path = work_path + "recolored/"
     masks_path = work_path + "masks/"
-    masked_path = work_path + "masked/"
     recolored_path = work_path + "recolored/"
     import os
     if not os.path.exists(recolored_path):
@@ -313,14 +314,18 @@ def images_recolor_use_dict(work_path, weights_dict, palette):
         img_shape = img_label.shape
         img_label_tmp = img_label.copy()
         mask_path = os.path.join(masks_path, img_item[:-4] + '.png')
-        mask_label = np.asfarray(Image.open(mask_path).convert('L'))
         img_label_tmp = img_label_tmp.reshape((-1, 3)).astype(np.uint8)
         weight = weights_dict[img_label_tmp[:, 0], img_label_tmp[:, 1], img_label_tmp[:, 2], :]
         recolored_label = (weight.reshape((img_shape[0], img_shape[1], -1, 1)) * palette.reshape((1, 1, -1, 3))).sum(
             axis=2)
         recolored_label = (recolored_label * 255).round().clip(0, 255).astype(np.uint8)
         # recolored_label = np.where(mask_label == 0, img_label, recolored_label)
-        recolored_label[np.where(mask_label == 0)] = img_label[np.where(mask_label == 0)]
+        if object_color is None:
+            mask_label = np.asfarray(Image.open(mask_path).convert('L'))
+            recolored_label[np.where(mask_label == 0)] = img_label[np.where(mask_label == 0)]
+        else:
+            mask_label = np.asfarray(Image.open(mask_path).convert('RGB'))
+            recolored_label[~np.all(mask_label == object_color, axis=-1)] = img_label[~np.all(mask_label == object_color, axis=-1)]
         recolored_label = np.ascontiguousarray(recolored_label)
         Image.fromarray(recolored_label.astype(np.uint8)).save(os.path.join(recolored_path, img_item[:-4] + '.png'))
 
@@ -330,11 +335,12 @@ def images_recolor_use_dict(work_path, weights_dict, palette):
     return time.perf_counter() - start
 
 
-def images_recolor(work_path, weights, palette):  # palette value is 0-1
+def images_recolor(work_path, weights, palette, object_color=None, recolor_again=False):  # palette value is 0-1
     start = time.perf_counter()
     images_path = work_path + "images/"
+    if recolor_again:
+        images_path = work_path + "recolored/"
     masks_path = work_path + "masks/"
-    masked_path = work_path + "masked/"
     recolored_path = work_path + "recolored/"
     import os
     if not os.path.exists(recolored_path):
@@ -345,12 +351,16 @@ def images_recolor(work_path, weights, palette):  # palette value is 0-1
         img_label = np.asfarray(Image.open(img_path).convert('RGB'))
         img_shape = img_label.shape
         mask_path = os.path.join(masks_path, img_item[:-4] + '.png')
-        mask_label = np.asfarray(Image.open(mask_path).convert('L'))
         recolored_label = (weight.reshape((img_shape[0], img_shape[1], -1, 1)) * palette.reshape((1, 1, -1, 3))).sum(
             axis=2)
         recolored_label = (recolored_label * 255).round().clip(0, 255).astype(np.uint8)
         # recolored_label = np.where(mask_label == 0, img_label, recolored_label)
-        recolored_label[np.where(mask_label == 0)] = img_label[np.where(mask_label == 0)]
+        if object_color is None:
+            mask_label = np.asfarray(Image.open(mask_path).convert('L'))
+            recolored_label[np.where(mask_label == 0)] = img_label[np.where(mask_label == 0)]
+        else:
+            mask_label = np.asfarray(Image.open(mask_path).convert('RGB'))
+            recolored_label[~np.all(mask_label == object_color, axis=-1)] = img_label[~np.all(mask_label == object_color, axis=-1)]
         recolored_label = np.ascontiguousarray(recolored_label)
         Image.fromarray(recolored_label.astype(np.uint8)).save(os.path.join(recolored_path, img_item[:-4] + '.png'))
 

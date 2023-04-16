@@ -24,8 +24,9 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             spacing: 10
             Rectangle {
+                y: 3
                 width: 440
-                height: 20
+                height: 24
                 border.width: 1
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -49,10 +50,6 @@ Item {
                     progressManager.readPath(chosenPath.text)
                 }
             }
-        }
-        Row {
-            anchors.horizontalCenter: parent.horizontalCenter
-            spacing: 20
             Rectangle {
                 id: choosePathButton
                 width: 100
@@ -80,6 +77,40 @@ Item {
                     anchors.fill: parent
                     onClicked: {
                         folderChosen.open()
+                    }
+                }
+            }
+        }
+        Row {
+            anchors.horizontalCenter: parent.horizontalCenter
+            spacing: 20
+            Rectangle {
+                id: chooseMaskButton
+                width: 100
+                height: 30
+                color: "transparent"
+                radius: 5
+                border.width: 3
+                border.color: chooseMaskButtonArea.pressed ? "#ececec" : "transparent"
+                Rectangle {
+                    width: 94
+                    height: 24
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    border.width: 1
+                    radius: 5
+                    color: "transparent"
+                }
+                Text {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: qsTr("选择目标")
+                }
+                MouseArea {
+                    id: chooseMaskButtonArea
+                    anchors.fill: parent
+                    onClicked: {
+                        maskSelector.visible = true
                     }
                 }
             }
