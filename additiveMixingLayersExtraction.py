@@ -179,6 +179,7 @@ def Get_ASAP_weights_using_Tan_2016_triangulation_and_then_barycentric_coordinat
                 # print len(index_list)
                 if len(index_list) != 0:
                     label = test_Del.find_simplex(unique_image_label[index_list], tol=1e-8)
+                    # label = test_Del.find_simplex(unique_image_label[index_list])
                     chosen_index = list(index_list[label >= 0])
                     tetra_pixel_dict[tuple((i, j, k))] += chosen_index
                     index_list = np.array(list(set(index_list) - set(chosen_index)))
@@ -188,6 +189,7 @@ def Get_ASAP_weights_using_Tan_2016_triangulation_and_then_barycentric_coordinat
                 # print (e)
 
     # print index_list
+    # print(len(index_list))
     assert (len(index_list) == 0)
 
     pixel_num = 0

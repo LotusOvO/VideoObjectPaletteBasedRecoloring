@@ -45,5 +45,10 @@ Window {
             x: rootwindow.x + 10
             y: rootwindow.y + 10
         }
+        OptionWindow{
+            id: optionWindow
+            x: rootwindow.x + 10
+            y: rootwindow.y + 10
+        }
     }
 }

@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick
 import QtQuick.Dialogs
 import QtQuick.Controls
 
@@ -84,37 +84,72 @@ Item {
         Row {
             anchors.horizontalCenter: parent.horizontalCenter
             spacing: 20
-            Rectangle {
-                id: chooseMaskButton
-                width: 100
-                height: 30
-                color: "transparent"
-                radius: 5
-                border.width: 3
-                border.color: chooseMaskButtonArea.pressed ? "#ececec" : "transparent"
+            Column {
+                spacing: 10
                 Rectangle {
-                    width: 94
-                    height: 24
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    border.width: 1
-                    radius: 5
+                    id: chooseMaskButton
+                    width: 100
+                    height: 30
                     color: "transparent"
+                    radius: 5
+                    border.width: 3
+                    border.color: chooseMaskButtonArea.pressed ? "#ececec" : "transparent"
+                    Rectangle {
+                        width: 94
+                        height: 24
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        border.width: 1
+                        radius: 5
+                        color: "transparent"
+                    }
+                    Text {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: qsTr("选项")
+                    }
+                    MouseArea {
+                        id: chooseMaskButtonArea
+                        anchors.fill: parent
+                        onClicked: {
+                            optionWindow.visible = true
+                        }
+                    }
                 }
-                Text {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: qsTr("选择目标")
-                }
-                MouseArea {
-                    id: chooseMaskButtonArea
-                    anchors.fill: parent
-                    onClicked: {
-                        maskSelector.visible = true
+                Rectangle {
+                    id: optionButton
+                    width: 100
+                    height: 30
+                    color: "transparent"
+                    radius: 5
+                    border.width: 3
+                    border.color: optionButtonArea.pressed ? "#ececec" : "transparent"
+                    Rectangle {
+                        width: 94
+                        height: 24
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        border.width: 1
+                        radius: 5
+                        color: "transparent"
+                    }
+                    Text {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: qsTr("选择目标")
+                    }
+                    MouseArea {
+                        id: optionButtonArea
+                        anchors.fill: parent
+                        onClicked: {
+                            maskSelector.visible = true
+                        }
                     }
                 }
             }
+
             Column {
+                spacing: 10
                 Rectangle {
                     id: getHullButton
                     width: 100
@@ -149,22 +184,92 @@ Item {
                         }
                     }
                 }
-
-                Row {
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
-                        height: 20
-                        text: qsTr("凸包顶点数")
-                        verticalAlignment: Text.AlignVCenter
+                SpinBox {
+                    id: vNum
+                    height: 20
+                    width: 40
+                    from: 4
+                    to: 10
+                    visible: false
+                    //                        value: 6
+                    //                        editable: true
+                    contentItem: TextInput {
+                        z: 2
+                        text: vNum.textFromValue(vNum.value, vNum.locale)
+                        font: vNum.font
+                        selectionColor: "#21be2b"
+                        selectedTextColor: "#ffffff"
+                        horizontalAlignment: Qt.AlignHCenter
+                        verticalAlignment: Qt.AlignVCenter
+                        //                                width: 20
+                        readOnly: !vNum.editable
+                        validator: vNum.validator
+                        inputMethodHints: Qt.ImhFormattedNumbersOnly
                     }
-                    SpinBox {
-                        id: vNum
-                        height: 20
+
+                    up.indicator: Rectangle {
+                        z: 5
+                        x: parent.width - width
+                        height: parent.height
+                        implicitWidth: 10
+                        implicitHeight: 10
+                        color: vNum.up.pressed ? "#e4e4e4" : "#f6f6f6"
+                        border.width: 1
+                        radius: 5
+                        Text {
+                            text: "+"
+                            font.pixelSize: vNum.font.pixelSize * 2
+                            anchors.fill: parent
+                            fontSizeMode: Text.Fit
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                vNum.increase()
+                            }
+                        }
+                    }
+
+                    down.indicator: Rectangle {
+                        z: 5
+                        x: 0
+                        height: parent.height
+                        implicitWidth: 10
+                        implicitHeight: 10
+                        color: vNum.down.pressed ? "#e4e4e4" : "#f6f6f6"
+                        border.width: 1
+                        radius: 5
+                        Text {
+                            text: "-"
+                            font.pixelSize: vNum.font.pixelSize * 2
+                            anchors.fill: parent
+                            fontSizeMode: Text.Fit
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                vNum.decrease()
+                            }
+                        }
+                    }
+
+                    background: Rectangle {
                         width: 40
-                        from: 4
-                        to: 10
-                        value: 6
-                        editable: true
+                        border.width: 1
+                        radius: 5
+                    }
+                    Component.onCompleted: {
+                        vNum.value = 6
+                    }
+                    Connections {
+                        target: optionWindow
+                        function onChangeSpinBoxNum(num) {
+                            vNum.value = num
+                        }
                     }
                 }
                 Rectangle {
@@ -200,17 +305,19 @@ Item {
                             }
                         }
                     }
-                    FileDialog{
+                    FileDialog {
                         id: hullFile
-                        nameFilters:["Js files (*.js)"]
+                        nameFilters: ["Js files (*.js)"]
                         onAccepted: {
-                            recolorManager.readTetraPrime(currentFile.toString().substring(8))
+                            recolorManager.readTetraPrime(currentFile.toString(
+                                                              ).substring(8))
                         }
                     }
                 }
             }
+
             Column {
-                spacing: 20
+                spacing: 10
                 Rectangle {
                     id: getWeightsButton
                     width: 100
@@ -276,17 +383,18 @@ Item {
                             }
                         }
                     }
-                    FileDialog{
+                    FileDialog {
                         id: weightsFile
-                        nameFilters:["Numpy files (*.npy)"]
+                        nameFilters: ["Numpy files (*.npy)"]
                         onAccepted: {
-                            recolorManager.readWeightsDict(currentFile.toString().substring(8))
+                            recolorManager.readWeightsDict(currentFile.toString(
+                                                               ).substring(8))
                         }
                     }
                 }
             }
         }
-        Row{
+        Row {
             anchors.horizontalCenter: parent.horizontalCenter
             spacing: 20
             Rectangle {
@@ -297,15 +405,15 @@ Item {
                 radius: 5
                 border.width: 3
                 border.color: savePaletteButtonArea.pressed ? "#ececec" : "transparent"
-                Rectangle{
-                        width: 94
-                        height: 24
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        border.width: 1
-                        radius: 5
-                        color: "transparent"
-                    }
+                Rectangle {
+                    width: 94
+                    height: 24
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    border.width: 1
+                    radius: 5
+                    color: "transparent"
+                }
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
@@ -315,18 +423,19 @@ Item {
                     id: savePaletteButtonArea
                     anchors.fill: parent
                     onClicked: {
-                        if(hullReady){
+                        if (hullReady) {
                             console.log("保存调色板")
                             savePalettePath.open()
                         }
                     }
                 }
-                FileDialog{
+                FileDialog {
                     id: savePalettePath
                     fileMode: FileDialog.SaveFile
                     defaultSuffix: "npy"
                     onAccepted: {
-                        paletteManager.saveRecolorPalette(currentFile.toString().substring(8))
+                        paletteManager.saveRecolorPalette(currentFile.toString(
+                                                              ).substring(8))
                     }
                 }
             }
@@ -338,15 +447,15 @@ Item {
                 radius: 5
                 border.width: 3
                 border.color: readPaletteButtonArea.pressed ? "#ececec" : "transparent"
-                Rectangle{
-                        width: 94
-                        height: 24
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        border.width: 1
-                        radius: 5
-                        color: "transparent"
-                    }
+                Rectangle {
+                    width: 94
+                    height: 24
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    border.width: 1
+                    radius: 5
+                    color: "transparent"
+                }
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
@@ -356,18 +465,19 @@ Item {
                     id: readPaletteButtonArea
                     anchors.fill: parent
                     onClicked: {
-                        if(hullReady){
+                        if (hullReady) {
                             console.log("读取调色板")
                             readPalettePath.open()
                         }
                     }
                 }
-                FileDialog{
+                FileDialog {
                     id: readPalettePath
-                    nameFilters:["Numpy files (*.npy)"]
-//                    defaultSuffix: "npy"
+                    nameFilters: ["Numpy files (*.npy)"]
+                    //                    defaultSuffix: "npy"
                     onAccepted: {
-                        paletteManager.readRecolorPalette(currentFile.toString().substring(8))
+                        paletteManager.readRecolorPalette(currentFile.toString(
+                                                              ).substring(8))
                     }
                 }
             }
@@ -379,15 +489,15 @@ Item {
                 radius: 5
                 border.width: 3
                 border.color: recolorButtonArea.pressed ? "#ececec" : "transparent"
-                Rectangle{
-                        width: 94
-                        height: 24
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        border.width: 1
-                        radius: 5
-                        color: "transparent"
-                    }
+                Rectangle {
+                    width: 94
+                    height: 24
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    border.width: 1
+                    radius: 5
+                    color: "transparent"
+                }
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     anchors.verticalCenter: parent.verticalCenter
@@ -397,7 +507,7 @@ Item {
                     id: recolorButtonArea
                     anchors.fill: parent
                     onClicked: {
-                        if(weightReady){
+                        if (weightReady) {
                             console.log("重着色")
                             recolorManager.doRecolor()
                         }

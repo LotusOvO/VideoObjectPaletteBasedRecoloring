@@ -22,6 +22,9 @@ class RecolorManager(QObject):
         self.weights = None
         self.weights_dict = None
         self.object_color = None
+        self.using_weights_dict = True
+        self.recolor_again = False
+        self.convert_video = True
 
     @Slot(str)
     def setWorkPath(self, path):
@@ -53,10 +56,15 @@ class RecolorManager(QObject):
         # while not work.ready():
         #     QtTest.QTest.qWait(100)
         # self.weights = work.get()[0]
-        self.weights = get_images_weight(self.work_path, self.tetra_prime)
-        self.weights_dict = None
-        self.saveWeightDict()
-        self.succeedGetWeight.emit()
+        if self.using_weights_dict:
+            self.weights_dict = get_images_weights_use_dict(self.work_path, self.tetra_prime)
+            self.saveWeightDict()
+            self.succeedGetWeight.emit()
+        else:
+            self.weights = get_images_weight(self.work_path, self.tetra_prime)
+            self.weights_dict = None
+            self.saveWeightDict()
+            self.succeedGetWeight.emit()
 
     @Slot(list)
     def setPalette(self, colors):
@@ -69,9 +77,9 @@ class RecolorManager(QObject):
         # while not work.ready():
         #     QtTest.QTest.qWait(100)
         if self.weights_dict is not None:
-            images_recolor_use_dict(self.work_path, self.weights_dict, self.palette, object_color=self.object_color)
+            images_recolor_use_dict(self.work_path, self.weights_dict, self.palette, object_color=self.object_color, recolor_again=self.recolor_again)
         else:
-            images_recolor(self.work_path, self.weights, self.palette, object_color=self.object_color)
+            images_recolor(self.work_path, self.weights, self.palette, object_color=self.object_color, recolor_again=self.recolor_again)
         self.succeedRecolor.emit(self.work_path)
 
     @Slot(str)
@@ -83,7 +91,8 @@ class RecolorManager(QObject):
 
     @Slot()
     def saveWeightDict(self):
-        if not self.weights_dict:
+        if type(self.weights_dict) is not np.ndarray:
+            print("123123")
             masked_path = self.work_path + "masked/"
             images = os.listdir(masked_path)
             self.weights_dict = np.zeros((256, 256, 256, len(self.tetra_prime)))
@@ -95,12 +104,12 @@ class RecolorManager(QObject):
                 ud = ud.astype(np.uint8)
                 self.weights_dict[ud[:, 0], ud[:, 1], ud[:, 2], :] = w[ii]
             video_name = self.work_path.rsplit("/", 2)[1]
-            name = self.work_path + video_name + "-weightsDict"
+            name = self.work_path + video_name + "-weightsDict-" + str(len(self.tetra_prime))
             np.save(name, self.weights_dict)
             self.weights = None
         else:
             video_name = self.work_path.rsplit("/", 2)[1]
-            name = self.work_path + video_name + "-weightsDict"
+            name = self.work_path + video_name + "-weightsDict-" + str(len(self.tetra_prime))
             np.save(name, self.weights_dict)
 
     @Slot(str)
@@ -122,6 +131,18 @@ class RecolorManager(QObject):
     @Slot()
     def unsetObjectColor(self):
         self.object_color = None
+
+    @Slot(bool)
+    def setUsingWeightsDict(self, flag):
+        self.using_weights_dict = flag
+
+    @Slot(bool)
+    def setRecolorAgain(self, flag):
+        self.recolor_again = flag
+
+    @Slot(bool)
+    def setConvertVideo(self, flag):
+        self.convert_video = flag
 
 
 if __name__ == "__main__":
