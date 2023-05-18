@@ -3,7 +3,7 @@ import QtQuick.Controls
 
 Item {
     width: 600
-    height: 240
+    height: 200
     id: paletteView
     property int currentIndex: 0
 
@@ -14,13 +14,13 @@ Item {
         anchors.fill: parent
         color: "transparent"
         border.width: 2
-        radius: 15
+        radius: 5
     }
     ListView {
         y: 25
         x: 40
         width: 520
-        height: 200
+        height: 180
         orientation: Qt.Horizontal
         model: paletteColors
         delegate: paletteDelegate
@@ -29,16 +29,16 @@ Item {
         id: paletteDelegate
         Rectangle {
             width: 80
-            height: 200
+            height: 1800
             color: "transparent"
             Column {
                 width: 80
-                height: 200
+                height: 180
                 spacing: -4
                 Rectangle {
-                    width: 60
-                    height: 60
-                    radius: 30
+                    width: 50
+                    height: 50
+                    radius: 10
                     border.width: 2
                     z: 5
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -47,7 +47,7 @@ Item {
                 Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
                     width: 8
-                    height: 80
+                    height: 60
                     border.width: 2
 //                    color: "black"
                     gradient: Gradient {
@@ -65,17 +65,17 @@ Item {
                     z: 4
                 }
                 Rectangle {
-                    width: 66
-                    height: 66
-                    radius: 33
+                    width: 54
+                    height: 54
+                    radius: 10
                     z: 3
                     anchors.horizontalCenter: parent.horizontalCenter
                     color: currentIndex === index ? "lightblue" : "transparent"
 
                     Rectangle{
-                        width: 60
-                        height: 60
-                        radius: 30
+                        width: 50
+                        height: 50
+                        radius: 10
                         z: 5
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.verticalCenter: parent.verticalCenter
@@ -87,6 +87,7 @@ Item {
                         anchors.fill: parent
                         onClicked: {
                             currentIndex = index
+                            colorPicker.visible = true
                         }
                     }
                 }

@@ -10,8 +10,8 @@ Window {
     id: maskSelector
     Rectangle{
         anchors.fill: parent
-        border.width: 3
-        radius: 15
+        border.width: 2
+        radius: 5
     }
     Rectangle{
         x: 20

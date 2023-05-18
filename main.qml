@@ -7,38 +7,38 @@ import QtQuick.Controls
 Window {
     //    property string path: ""
     //    property string filename: ""
-    width: 1600
-    height: 900
+    width: 1300
+    height: 700
     visible: true
     title: qsTr("VideoObjectPaletteBasedRecoloring")
     id: rootwindow
     Item {
-        width: 1400
-        height: 900
+        width: 1300
+        height: 700
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
         ColorPicker {
             id: colorPicker
-            x: 10
-            y: 450
-            width: 480
+            x: rootwindow.x + 300
+            y: rootwindow.y + 100
+//            width: 480
         }
         ButtonArea{
             id: buttonArea
-            x: 60
+            x: 40
             y: 20
         }
 
         PaletteView{
             id: paletteView
-            y: 200
-            x: 60
+            x: buttonArea.width + buttonArea.x + 20
+            y: 20
         }
 
         VideoPlayer{
             id: videoPlayer
-            y: 10
-            x: 720
+            y: buttonArea.height + buttonArea.y + 20
+            x: 40
         }
         MaskSelector{
             id: maskSelector

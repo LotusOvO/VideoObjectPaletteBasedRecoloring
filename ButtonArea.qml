@@ -4,7 +4,7 @@ import QtQuick.Controls
 
 Item {
     width: 600
-    height: 170
+    height: 200
     id: buttonArea
     property bool pathReady: false
     property bool hullReady: false
@@ -13,7 +13,7 @@ Item {
         anchors.fill: parent
         color: "transparent"
         border.width: 2
-        radius: 15
+        radius: 5
     }
     Column {
         y: 10

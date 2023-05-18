@@ -2,10 +2,16 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-Item {
+
+
+Window {
     id: colorPicker
-    width: 720
-    height: 350
+    width: 750
+    height: 400
+    color: "transparent"
+//    color: "red"
+    flags: Qt.Window | Qt.FramelessWindowHint
+//    visible: true
     property color pickedColor: Qt.hsva(1, 1, 1, 1)
     property color savedColor: pickedColor
     property int r: 255
@@ -57,10 +63,19 @@ Item {
         getS()
         getV()
     }
+    Rectangle {
+        anchors.fill: parent
+//        color: "transparent"
+        border.width: 2
+        radius: 5
+    }
 
     Row {
+        x:15
+        y:15
         //        padding: 30
         spacing: 20
+        width: parent.width
 //        Button {
 //            width: 30
 //            height: 30
@@ -439,7 +454,7 @@ Item {
             height: width
             Rectangle {
                 anchors.fill: parent
-                //                color: "red"
+//                                color: "green"
             }
             Column {
                 width: parent.width
@@ -972,6 +987,7 @@ Item {
                         onClicked: {
 //                            savedColor = pickedColor
                             pickColor(pickedColor)
+                            colorPicker.visible = false
                         }
                     }
                     Button{

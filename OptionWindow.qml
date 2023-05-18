@@ -5,14 +5,14 @@ Window {
     id: optionWindow
     width: 220
     height: 300
-//    visible: true
+    //    visible: true
     color: "transparent"
     flags: Qt.Window | Qt.FramelessWindowHint
     signal changeSpinBoxNum(int num)
     Rectangle {
         anchors.fill: parent
-        border.width: 3
-        radius: 15
+        border.width: 2
+        radius: 5
         Column {
             y: 10
             x: parent.x + 10
@@ -37,7 +37,8 @@ Window {
                 checked: true
                 hoverEnabled: false
                 onClicked: {
-                    recolorManager.setUsingWeightsDict(enableWeightsDict.checked)
+                    recolorManager.setUsingWeightsDict(
+                                enableWeightsDict.checked)
                 }
 
                 indicator: Rectangle {
@@ -111,7 +112,8 @@ Window {
                 checked: true
                 hoverEnabled: false
                 onClicked: {
-                    recolorManager.setConvertVideo(enableAutoConvertVideo.checked)
+                    recolorManager.setConvertVideo(
+                                enableAutoConvertVideo.checked)
                 }
 
                 indicator: Rectangle {
@@ -144,7 +146,7 @@ Window {
             }
 
             Row {
-                Rectangle{
+                Rectangle {
                     color: "transparent"
                     height: 20
                     width: 10
@@ -241,7 +243,7 @@ Window {
                     width: 80
                     color: "transparent"
                     Text {
-//                        x: parent.x
+                        //                        x: parent.x
                         anchors.horizontalCenter: parent.horizontalCenter
                         anchors.verticalCenter: parent.verticalCenter
                         verticalAlignment: Text.AlignVCenter
@@ -249,7 +251,113 @@ Window {
                     }
                 }
             }
+            Row {
+                Rectangle {
+                    color: "transparent"
+                    height: 20
+                    width: 10
+                }
+
+                SpinBox {
+                    id: nNum
+                    height: 20
+                    width: 60
+                    from: 1
+                    to: 24
+                    //                        value: 6
+                    //                        editable: true
+                    contentItem: TextInput {
+                        z: 2
+                        text: nNum.textFromValue(nNum.value, nNum.locale)
+                        font: nNum.font
+                        selectionColor: "#21be2b"
+                        selectedTextColor: "#ffffff"
+                        horizontalAlignment: Qt.AlignHCenter
+                        verticalAlignment: Qt.AlignVCenter
+                        //                                width: 20
+                        readOnly: !nNum.editable
+                        validator: nNum.validator
+                        inputMethodHints: Qt.ImhFormattedNumbersOnly
+                    }
+
+                    up.indicator: Rectangle {
+                        z: 5
+                        x: parent.width - width
+                        height: parent.height
+                        implicitWidth: 20
+                        implicitHeight: 10
+                        color: nNum.up.pressed ? "#e4e4e4" : "#f6f6f6"
+                        border.width: 1
+                        radius: 5
+                        Text {
+                            text: "+"
+                            font.pixelSize: nNum.font.pixelSize * 2
+                            anchors.fill: parent
+                            fontSizeMode: Text.Fit
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                nNum.increase()
+                            }
+                        }
+                    }
+
+                    down.indicator: Rectangle {
+                        z: 5
+                        x: 0
+                        height: parent.height
+                        implicitWidth: 20
+                        implicitHeight: 10
+                        color: nNum.down.pressed ? "#e4e4e4" : "#f6f6f6"
+                        border.width: 1
+                        radius: 5
+                        Text {
+                            text: "-"
+                            font.pixelSize: nNum.font.pixelSize * 2
+                            anchors.fill: parent
+                            fontSizeMode: Text.Fit
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                nNum.decrease()
+                            }
+                        }
+                    }
+
+                    background: Rectangle {
+                        implicitWidth: 60
+                        border.width: 1
+                        radius: 5
+                    }
+                    onValueChanged: {
+                    }
+
+                    Component.onCompleted: {
+                        nNum.value = 12
+                    }
+                }
+
+                Rectangle {
+                    height: 20
+                    width: 115
+                    color: "transparent"
+                    Text {
+                        //                        x: parent.x
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.verticalCenter: parent.verticalCenter
+                        verticalAlignment: Text.AlignVCenter
+                        text: qsTr("视频目标采样间隔")
+                    }
+                }
+            }
         }
+
         Rectangle {
             id: acButton
             width: 100
